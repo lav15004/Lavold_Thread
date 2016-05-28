@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /***
- * This is the main class that runs the Android app.
+ * This is the main class that runs the Android Application
  *
  * This app has a progress bar that updates as a file is written or read.
- * I has a List View that displays the contents of the file that is read.
+ * It has a List View that displays the contents of the file that is read.
  * It also writes to a file in the internal files system.
  *
  * There are three buttons: Create, Load and Clear.
@@ -44,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setMax(10);
-        progressBar.setVisibility(View.GONE);
+        if (progressBar != null) {
+            progressBar.setMax(10);
+            progressBar.setVisibility(View.GONE);
+        }
         registerClickCallback();
 
     }
@@ -55,15 +57,20 @@ public class MainActivity extends AppCompatActivity {
      */
     private void registerClickCallback() {
         ListView list = (ListView) findViewById(R.id.listViewMain);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView textView = (TextView) view;
-                String message = "You clicked # " + position + ", which is string: "
-                        + textView.getText().toString();
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-        });
+        try{
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView textView = (TextView) view;
+                    String message = "You clicked # " + position + ", which is string: "
+                            + textView.getText().toString();
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * Makes the progress bar visible for progress in saving a file.
      *
-     * @param view
+     * @param view passes a reference to the view
      */
     public void saveToFile(View view) {
         progressBar.setVisibility(View.VISIBLE);
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * Makes the progress bar visible for progress in saving a file.
      *
-     * @param view
+     * @param view passes a reference to the view
      */
     public void readFile(View view) {
         progressBar.setVisibility(View.VISIBLE);
@@ -101,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * Displays a Toast saying that the list was cleared
      *
-     * @param view
+     * @param view  passes a reference to the view
      */
     public void clearListView(View view) {
         adapter.clear();
@@ -123,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
          * Based on the parameter value this method runs the logic to save or read from
          * a file.
          *
-         * @param params
-         * @return
+         * @param params  value that specifies which method to run
+         * @return   return value
          */
         @Override
         protected String doInBackground(Integer... params) {
@@ -150,19 +157,19 @@ public class MainActivity extends AppCompatActivity {
             int progressCntr = 1;
             try {
                 InputStream fis = new FileInputStream(file);
-                if (fis != null){
-                    InputStreamReader inputReader = new InputStreamReader(fis);
-                    BufferedReader buffReader = new BufferedReader(inputReader);
 
-                    String line;
-                    do {
-                        line = buffReader.readLine();
-                        if(line != null)
-                            arFileData.add(line);
-                        publishProgress(progressCntr++);
-                        Thread.sleep(250);
-                    } while (line != null);
-                }
+                InputStreamReader inputReader = new InputStreamReader(fis);
+                BufferedReader buffReader = new BufferedReader(inputReader);
+
+                String line;
+                do {
+                    line = buffReader.readLine();
+                    if(line != null)
+                        arFileData.add(line);
+                    publishProgress(progressCntr++);
+                    Thread.sleep(250);
+                } while (line != null);
+
             }catch (Exception e) {
                 e.printStackTrace();
             }
@@ -205,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
          * For reading the file is does a setAdapter which cause the List View to display on screen
          * and it also displays a Toast saying that the file was read.
          *
-         * @param result
+         * @param result  result is used to determine what post execute activities should run
          */
         @Override
         protected void onPostExecute(String result) {
@@ -223,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
          * onProgressUpdate
          * updates the progress bar.
          *
-         * @param values
+         * @param values value for the progress bar.  1 - 10
          */
         @Override
         protected void onProgressUpdate(Integer... values) {
